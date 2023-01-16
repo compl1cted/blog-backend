@@ -1,17 +1,16 @@
-import { Column, Entity, EntitySchema, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
+import { ModelTemplate } from "./template.model";
 import { UserModel } from "./user.model";
 
 @Entity()
-export class PostModel extends EntitySchema {
-    @PrimaryGeneratedColumn()
-    id: number;
+export class PostModel extends ModelTemplate {
     @Column()
-    title: string;
+    Title: string;
     @Column()
-    content: string;
+    Content: string;
     @Column()
-    date: Date;
-    @ManyToOne(() => UserModel, (user) => user.posts)
+    Date: Date;
+    @ManyToOne(() => UserModel, (user) => user.Posts)
     @Column()
-    user: number;
+    User: number;
 }

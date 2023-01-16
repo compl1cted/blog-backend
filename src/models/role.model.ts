@@ -1,8 +1,5 @@
-import { Entity, EntitySchema, PrimaryGeneratedColumn } from "typeorm";
+import { Entity } from "typeorm";
+import { ModelTemplate } from "./template.model";
 
 @Entity()
-export class RoleModel extends EntitySchema {
-    @PrimaryGeneratedColumn()
-    id: number;
-
-}
+export class RoleModel extends ModelTemplate { }

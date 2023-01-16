@@ -1,17 +1,27 @@
-import { BaseEntity, Column, Entity, EntitySchema, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, OneToMany, OneToOne } from "typeorm";
 import { PostModel } from "./post.model";
+import { ModelTemplate } from "./template.model";
+import { TokenModel } from "./token.model";
 
 @Entity()
-export class UserModel extends EntitySchema {
-    @PrimaryGeneratedColumn()
-    id: number;
+export class UserModel extends ModelTemplate {
     @Column()
-    useranme: string;
+    Username: string;
     @Column()
-    email: string;
+    Email: string;
     @Column()
-    password: string;
-    @OneToMany(() => PostModel, (post) => post.user)
+    Password: string;
+    @OneToOne(() => TokenModel)
+    token: TokenModel;
+    @OneToMany(() => PostModel, (post) => post.User)
     @JoinTable()
-    posts: PostModel[];
+    Posts: PostModel[];
+
+    constructor(username: string, email: string, password: string) {
+        super();
+
+        this.Username = username;
+        this.Email = email;
+        this.Password = email;
+    }
 }

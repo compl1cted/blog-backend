@@ -1,9 +1,9 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { PostModel } from "../models/post.model"
-import { RoleModel } from "../models/role.model"
 import { UserModel } from "../models/user.model"
-import { logger } from "./logger.config"
+import { TokenModel } from "../models/token.model"
+import { RoleModel } from "../models/role.model"
+import { PostModel } from "../models/post.model"
 
 
 const AppDataSource = new DataSource({
@@ -13,7 +13,7 @@ const AppDataSource = new DataSource({
     username: "postgres",
     password: "123",
     database: "blog",
-    entities: [UserModel, RoleModel, PostModel],
+    entities: [UserModel, TokenModel, RoleModel, PostModel],
     synchronize: true,
     logging: false,
 });
@@ -21,7 +21,7 @@ const AppDataSource = new DataSource({
 const ConnectToDb = async () => {
     AppDataSource.initialize()
         .then(() => {
-            logger.log("info", "Database connection established!");
+            console.log("Database connection established!");
         })
         .catch((error: string) => console.log(error));
 }

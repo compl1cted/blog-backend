@@ -1,11 +1,19 @@
-import { Column, Entity, EntitySchema, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { ModelTemplate } from "./template.model";
 import { UserModel } from "./user.model";
 
 @Entity()
-export class TokenModel extends EntitySchema {
-    @PrimaryGeneratedColumn()
-    id: number;
-    @OneToOne(() => UserModel)
+export class TokenModel extends ModelTemplate {
     @Column()
-    user: UserModel;
+    RefreshToken: string;
+    @OneToOne(() => UserModel, { nullable: false, eager: true, cascade: true })
+    @JoinColumn()
+    User: UserModel;
+
+    constructor(RefreshToken: string, user: UserModel) {
+        super();
+
+        this.RefreshToken = RefreshToken;
+        this.User = user;
+    }
 }
