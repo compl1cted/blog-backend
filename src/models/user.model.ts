@@ -22,6 +22,6 @@ export class UserModel extends ModelTemplate {
 
         this.Username = username;
         this.Email = email;
-        this.Password = email;
+        this.Password = password;
     }
 }

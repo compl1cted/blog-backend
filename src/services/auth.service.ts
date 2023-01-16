@@ -31,6 +31,7 @@ export class AuthService {
         if (usernameExists) {
             throw HttpError.BadRequest("Username already exist!");
         }
+
         const emailExists = await this.userService.FindByEmail(email);
         if (emailExists) {
             throw HttpError.BadRequest("Email already exist!");
@@ -38,7 +39,7 @@ export class AuthService {
 
         let hashedPassword = await bcrypt.hash(password, 10);
         let newUser = new UserModel(username, email, hashedPassword);
-        this.userService.Create(newUser);
+        await this.userService.Create(newUser);
 
         let tokens = this.SaveGeneratedTokens(newUser);
         return tokens;
@@ -58,8 +59,8 @@ export class AuthService {
         if (!userData || !tokenFromDb) {
             throw HttpError.UnauthorizedError();
         }
-        const user = await this.userService.FindOne(userData.Id);
 
+        const user = await this.userService.FindOne(userData.Id);
         if (user === null) {
             throw HttpError.BadRequest("User does not exist!");
         }
