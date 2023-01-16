@@ -4,15 +4,18 @@ import { UserModel } from "../models/user.model"
 import { TokenModel } from "../models/token.model"
 import { RoleModel } from "../models/role.model"
 import { PostModel } from "../models/post.model"
+import dotenv from "dotenv"
+import path from "path"
 
+dotenv.config({ path: path.resolve(__dirname, "../../env/.env") });
 
 const AppDataSource = new DataSource({
-    type: "postgres",
-    host: "localhost",
+    type: process.env.DB_DIALECT,
+    host: process.env.DB_HOST,
     port: 5434,
-    username: "postgres",
-    password: "123",
-    database: "blog",
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     entities: [UserModel, TokenModel, RoleModel, PostModel],
     synchronize: true,
     logging: false,

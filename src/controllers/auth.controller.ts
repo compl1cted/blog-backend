@@ -41,7 +41,7 @@ export class AuthController {
     public Logout = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { RefreshToken } = req.cookies;
-            this.authService.Logout(RefreshToken);
+            await this.authService.Logout(RefreshToken);
             res.clearCookie("RefreshToken");
         }
         catch (error) {

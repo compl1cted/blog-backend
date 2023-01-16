@@ -6,9 +6,10 @@ import { TokensDto } from "../models/dtos/auth/tokens.dto";
 import { HttpError } from "../errors/http-errors";
 import { UserModel } from "../models/user.model";
 import { AppDataSource } from "../config/database.config";
+import dotenv from "dotenv"
+import path from "path"
 
-const ACCESS_SECRET = "123";
-const REFRESH_SECRET = "1234"
+dotenv.config({ path: path.resolve(__dirname, "../../env/.env") });
 
 export class TokenService extends DatabaseService<TokenModel> {
     constructor() {
@@ -16,9 +17,9 @@ export class TokenService extends DatabaseService<TokenModel> {
     }
 
     GenerateTokens(payload: UserJwtPayload): TokensDto {
-        const accessToken = jwt.sign({ payload }, ACCESS_SECRET, { expiresIn: "150m" });
-        const refreshToken = jwt.sign({ payload }, REFRESH_SECRET, { expiresIn: "30d" });
-        return new TokensDto(accessToken, refreshToken);
+        const accessToken = jwt.sign({ payload }, process.env.JWT_ACCESS_SECRET, { expiresIn: "150m" });
+        const refreshToken = jwt.sign({ payload }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
+        return new TokensDto(accessToken, refreshToken, payload);
     }
 
     async FindToken(refreshToken: string): Promise<TokenModel | null> {
@@ -37,7 +38,7 @@ export class TokenService extends DatabaseService<TokenModel> {
 
     ValidateAccessToken(accessToken: string): UserJwtPayload {
         try {
-            const verifyResult = jwt.verify(accessToken, ACCESS_SECRET);
+            const verifyResult = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
             const userData = verifyResult as UserJwtPayload;
             return userData;
         }
@@ -48,7 +49,7 @@ export class TokenService extends DatabaseService<TokenModel> {
 
     ValidateRefreshToken(refreshToken: string): UserJwtPayload {
         try {
-            const verifyResult = jwt.verify(refreshToken, REFRESH_SECRET);
+            const verifyResult = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
             const userData = verifyResult as UserJwtPayload;
             return userData;
         }
