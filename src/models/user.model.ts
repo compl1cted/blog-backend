@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { PostModel } from "./post.model";
 import { ModelTemplate } from "./template.model";
 import { TokenModel } from "./token.model";
@@ -11,17 +11,21 @@ export class UserModel extends ModelTemplate {
     Email: string;
     @Column()
     Password: string;
+    @Column()
+    ActivationLink: string;
+    @Column()
+    IsActivated: boolean = false;
     @OneToOne(() => TokenModel)
     token: TokenModel;
     @OneToMany(() => PostModel, (post) => post.User)
-    @JoinTable()
     Posts: PostModel[];
 
-    constructor(username: string, email: string, password: string) {
+    constructor(username: string, email: string, password: string, activationLink: string) {
         super();
 
         this.Username = username;
         this.Email = email;
         this.Password = password;
+        this.ActivationLink = activationLink;
     }
 }

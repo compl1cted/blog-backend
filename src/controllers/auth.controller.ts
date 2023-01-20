@@ -2,14 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator/src/validation-result";
 import { HttpError } from "../errors/http-errors";
 import { AuthService } from "../services/auth.service";
-import { UserService } from "../services/user.service";
 
 export class AuthController {
     private authService: AuthService;
-    private userService: UserService;
     constructor() {
         this.authService = new AuthService();
-        this.userService = new UserService();
     }
     public SignIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -31,6 +28,7 @@ export class AuthController {
             }
             const { username, email, password } = req.body;
             const userData = await this.authService.SignUp(username, email, password);
+            res.cookie("RefreshToken", userData.RefreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
             return res.json(userData);
         }
         catch (error) {
@@ -49,6 +47,17 @@ export class AuthController {
         }
     }
 
+    public Activate = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const activationLink = req.params.link;
+            await this.authService.Activate(activationLink);
+            res.redirect(process.env.FRONT_URL);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
     public Refresh = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { RefreshToken } = req.cookies;
@@ -57,16 +66,6 @@ export class AuthController {
         }
         catch (error) {
             next(error);
-        }
-    }
-
-    public GetUsers = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            let Users = await this.userService.FindAll();
-            res.json(Users);
-        }
-        catch (error) {
-            next(error)
         }
     }
 }

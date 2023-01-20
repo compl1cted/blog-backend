@@ -3,10 +3,10 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import { ConnectToDb } from "./config/database.config";
-import { AuthRoute } from "./routes/auth.route";
 import { ErrorMiddleware } from "./middlewares/error.middleware";
 import dotenv from "dotenv";
 import path from "path";
+import { ApiRouter } from "./routes/api.router";
 
 dotenv.config({ path: path.resolve(__dirname, "../env/.env") });
 
@@ -19,9 +19,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
     credentials: true,
-    origin: process.env.NODE_ENV
+    origin: true
 }));
-app.use("/auth", AuthRoute);
+app.use("/api", ApiRouter);
 app.use(ErrorMiddleware);
 
 const StartServer = () => {

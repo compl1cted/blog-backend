@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { ModelTemplate } from "./template.model";
 import { UserModel } from "./user.model";
 
@@ -11,6 +11,15 @@ export class PostModel extends ModelTemplate {
     @Column()
     Date: Date;
     @ManyToOne(() => UserModel, (user) => user.Posts)
-    @Column()
-    User: number;
+    @JoinColumn()
+    User: UserModel;
+
+    constructor(title: string, content: string, date: Date, user: UserModel) {
+        super();
+
+        this.Title = title;
+        this.Content = content;
+        this.Date = date;
+        // this.User = user;
+    }
 }

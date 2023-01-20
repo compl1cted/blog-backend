@@ -3,18 +3,22 @@ import { body } from "express-validator";
 import { AuthController } from "../controllers/auth.controller";
 import { AuthMiddleware } from "../middlewares/auth.middleware";
 
-const AuthRoute = Router();
+const router = Router();
 
 const authController = new AuthController();
 
-AuthRoute.post("/sign_in", authController.SignIn);
+router.post("/sign_in", authController.SignIn);
 
-AuthRoute.post("/sign_up",
+router.post("/sign_up",
     body("username").isLength({ min: 2 }),
     body("email").isEmail(),
     body("password").isLength({ min: 5, max: 30 }),
     authController.SignUp);
 
-AuthRoute.get("/users", AuthMiddleware, authController.GetUsers);
+router.get("/logout", authController.Logout);
 
-export { AuthRoute };
+router.get("/activate/:link", authController.Activate);
+
+router.get("/refresh", authController.Refresh)
+
+export { router as AuthRouter };

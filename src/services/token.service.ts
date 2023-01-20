@@ -17,7 +17,7 @@ export class TokenService extends DatabaseService<TokenModel> {
     }
 
     GenerateTokens(payload: UserJwtPayload): TokensDto {
-        const accessToken = jwt.sign({ payload }, process.env.JWT_ACCESS_SECRET, { expiresIn: "150m" });
+        const accessToken = jwt.sign({ payload }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
         const refreshToken = jwt.sign({ payload }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
         return new TokensDto(accessToken, refreshToken, payload);
     }
@@ -30,10 +30,10 @@ export class TokenService extends DatabaseService<TokenModel> {
         const ExistingToken = await this.repository.findOneBy({ User: user });
         if (ExistingToken !== null) {
             ExistingToken.RefreshToken = refreshToken;
-            await this.Update(ExistingToken);
+            await this.repository.save(ExistingToken);
             return ExistingToken;
         }
-        return await this.Create(new TokenModel(refreshToken, user));
+        return await this.repository.save(new TokenModel(refreshToken, user));
     }
 
     ValidateAccessToken(accessToken: string): UserJwtPayload {
