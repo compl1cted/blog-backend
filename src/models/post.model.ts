@@ -9,17 +9,17 @@ export class PostModel extends ModelTemplate {
     @Column()
     Content: string;
     @Column()
-    Date: Date;
-    @ManyToOne(() => UserModel, (user) => user.Posts)
+    Date: string;
+    @ManyToOne(() => UserModel, (user) => user.Posts, { eager: true })
     @JoinColumn()
     User: UserModel;
 
-    constructor(title: string, content: string, date: Date, user: UserModel) {
+    constructor(title: string, content: string, date: string, user: UserModel) {
         super();
 
         this.Title = title;
         this.Content = content;
         this.Date = date;
-        // this.User = user;
+        this.User = user;
     }
 }

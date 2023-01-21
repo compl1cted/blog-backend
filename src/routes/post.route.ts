@@ -7,7 +7,7 @@ const router = Router();
 
 const postController = new PostController();
 
-router.post("/create", postController.Create);
+router.post("/", postController.Create);
 router.get("/:id", postController.FindOne);
 router.get("/", postController.FindAll);
 router.put("/", postController.Update);

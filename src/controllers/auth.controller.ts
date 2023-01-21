@@ -13,7 +13,7 @@ export class AuthController {
             const { username_or_email, password } = req.body;
             const userData = await this.authService.SignIn(username_or_email, password);
             res.cookie("RefreshToken", userData.RefreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-            return res.json(userData);
+            return res.json({ userData });
         }
         catch (error) {
             next(error);
@@ -29,7 +29,7 @@ export class AuthController {
             const { username, email, password } = req.body;
             const userData = await this.authService.SignUp(username, email, password);
             res.cookie("RefreshToken", userData.RefreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-            return res.json(userData);
+            return res.json({ userData });
         }
         catch (error) {
             next(error);
@@ -63,6 +63,7 @@ export class AuthController {
             const { RefreshToken } = req.cookies;
             const userData = await this.authService.Refresh(RefreshToken);
             res.cookie("RefreshToken", userData.RefreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+            res.json({ userData });
         }
         catch (error) {
             next(error);
