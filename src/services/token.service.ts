@@ -1,10 +1,10 @@
 import { UserJwtPayload } from "../models/dtos/auth/jwt_payload.dto";
-import { TokenModel } from "../models/token.model";
-import { DatabaseService } from "./database.service";
+import { TokenModel } from "../models/token.entity";
+import { DatabaseService } from "./base.service";
 import jwt from "jsonwebtoken"
 import { TokensDto } from "../models/dtos/auth/tokens.dto";
 import { HttpError } from "../errors/http-errors";
-import { UserModel } from "../models/user.model";
+import { UserModel } from "../models/user.enity";
 import { AppDataSource } from "../config/database.config";
 import dotenv from "dotenv"
 import path from "path"

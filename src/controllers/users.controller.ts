@@ -11,7 +11,7 @@ export class UserController {
     public FindOne = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { id } = req.params;
-            const user = await this.userService.repository.findOne({ where: { Id: parseInt(id) } });
+            const user = await this.userService.FindOne(parseInt(id));
             res.json(user);
         } catch (error) {
             next(error);
@@ -19,7 +19,7 @@ export class UserController {
     }
     public FindAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const users = await this.userService.repository.find();
+            const users = await this.userService.FindAll();
             res.json(users);
         } catch (error) {
             next(error);
@@ -28,7 +28,7 @@ export class UserController {
     public Update = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { user } = req.body;
-            const postData = await this.userService.repository.save(user);
+            const postData = await this.userService.Update(user);
             res.json(postData);
         } catch (error) {
             next(error);
@@ -37,7 +37,7 @@ export class UserController {
     public Delete = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { id } = req.params;
-            const userData = await this.userService.repository.delete({ Id: parseInt(id) });
+            const userData = await this.userService.Remove(parseInt(id));
             res.json(userData);
         } catch (error) {
             next(error);

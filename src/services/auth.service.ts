@@ -1,7 +1,7 @@
 import { UserService } from "./user.service";
 import { TokenService } from "./token.service";
 import bcrypt from "bcrypt";
-import { UserModel } from "../models/user.model";
+import { UserEntity } from "../models/user.enity";
 import { UserJwtPayload } from "../models/dtos/auth/jwt_payload.dto";
 import { TokensDto } from "../models/dtos/auth/tokens.dto";
 import { HttpError } from "../errors/http-errors";
@@ -46,8 +46,8 @@ export class AuthService {
         await this.mailService.SendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
         let hashedPassword = await bcrypt.hash(password, 10);
-        let newUser = new UserModel(username, email, hashedPassword, activationLink);
-        await this.userService.repository.save(newUser);
+        let newUser = new UserEntity(username, email, hashedPassword, activationLink);
+        await this.userService.Create(newUser);
 
         let tokens = this.SaveGeneratedTokens(newUser);
         return tokens;
@@ -58,12 +58,12 @@ export class AuthService {
     }
 
     async Activate(activationLink: string) {
-        let user = await this.userService.repository.findOne({ where: { ActivationLink: activationLink } });
+        let user = await this.userService.FindByActivationLink(activationLink);
         if (user === null) {
             throw HttpError.BadRequest("Invalid Activation Link!");
         }
         user.IsActivated = true;
-        await this.userService.repository.save(user);
+        await this.userService.Update(user);
     }
 
     async Refresh(refreshToken: string): Promise<TokensDto> {
@@ -77,7 +77,7 @@ export class AuthService {
             throw HttpError.UnauthorizedError();
         }
 
-        const user = await this.userService.repository.findOne({ where: { Id: userData.Id } });
+        const user = await this.userService.FindOne(userData.Id);
         if (user === null) {
             throw HttpError.BadRequest("User does not exist!");
         }
@@ -85,7 +85,7 @@ export class AuthService {
         return await this.SaveGeneratedTokens(user);
     }
 
-    private async SaveGeneratedTokens(user: UserModel): Promise<TokensDto> {
+    private async SaveGeneratedTokens(user: UserEntity): Promise<TokensDto> {
         let payload = new UserJwtPayload(user.Id, user.Username, user.Email, user.IsActivated);
         let tokens = this.tokenService.GenerateTokens(payload);
         await this.tokenService.SaveRefreshToken(tokens.RefreshToken, user);

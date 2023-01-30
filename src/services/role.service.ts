@@ -1,9 +1,6 @@
-import { DatabaseService } from "./database.service";
-import { RoleModel } from "../models/role.model";
-import { AppDataSource } from "../config/database.config";
+import { BaseService } from "./base.service";
+import { RoleEntity } from "../models/role.entity";
 
-export class RoleService extends DatabaseService<RoleModel> {
-    constructor() {
-        super(AppDataSource.getRepository(RoleModel));
-    }
+export class RoleService extends BaseService<RoleEntity> {
+
 }

@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
-import { PostModel } from "./post.model";
-import { ModelTemplate } from "./template.model";
-import { TokenModel } from "./token.model";
+import { PostEntity } from "./post.entity";
+import { BaseEntity } from "./base.entity";
+import { TokenEntity } from "./token.entity";
 
 @Entity()
-export class UserModel extends ModelTemplate {
+export class UserEntity extends BaseEntity {
     @Column()
     Username: string;
     @Column()
@@ -15,10 +15,10 @@ export class UserModel extends ModelTemplate {
     ActivationLink: string;
     @Column()
     IsActivated: boolean = false;
-    @OneToOne(() => TokenModel)
-    token: TokenModel;
-    @OneToMany(() => PostModel, (post) => post.User)
-    Posts: PostModel[];
+    @OneToOne(() => TokenEntity)
+    token: TokenEntity;
+    @OneToMany(() => PostEntity, (post) => post.User)
+    Posts: PostEntity[];
 
     constructor(username: string, email: string, password: string, activationLink: string) {
         super();

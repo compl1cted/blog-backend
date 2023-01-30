@@ -1,9 +1,9 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { UserModel } from "../models/user.model"
-import { TokenModel } from "../models/token.model"
-import { RoleModel } from "../models/role.model"
-import { PostModel } from "../models/post.model"
+import { UserModel } from "../models/user.enity"
+import { TokenModel } from "../models/token.entity"
+import { RoleModel } from "../models/role.entity"
+import { PostModel } from "../models/post.entity"
 import dotenv from "dotenv"
 import path from "path"
 

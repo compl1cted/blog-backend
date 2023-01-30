@@ -1,9 +1,6 @@
-import { DatabaseService } from "./database.service";
-import { PostModel } from "../models/post.model";
-import { AppDataSource } from "../config/database.config";
+import { BaseService } from "./base.service";
+import { PostEntity } from "../models/post.entity";
 
-export class PostService extends DatabaseService<PostModel> {
-    constructor() {
-        super(AppDataSource.getRepository(PostModel));
-    }
+export class PostService extends BaseService<PostEntity> {
+
 }
