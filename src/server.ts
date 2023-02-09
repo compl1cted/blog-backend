@@ -13,14 +13,14 @@ dotenv.config({ path: path.resolve(__dirname, "../env/.env") });
 const app = express();
 const PORT = process.env.API_PORT || 7000;
 
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(cors({
     credentials: true,
     origin: true
 }));
+app.use(cookieParser());
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api", ApiRouter);
 app.use(ErrorMiddleware);
 

@@ -1,19 +1,19 @@
 import { UserJwtPayload } from "../models/dtos/auth/jwt_payload.dto";
-import { TokenModel } from "../models/token.entity";
-import { DatabaseService } from "./base.service";
+import { TokenEntity } from "../models/token.entity";
+import { BaseService } from "./base.service";
 import jwt from "jsonwebtoken"
 import { TokensDto } from "../models/dtos/auth/tokens.dto";
 import { HttpError } from "../errors/http-errors";
-import { UserModel } from "../models/user.enity";
+import { UserEntity } from "../models/user.enity";
 import { AppDataSource } from "../config/database.config";
 import dotenv from "dotenv"
 import path from "path"
 
 dotenv.config({ path: path.resolve(__dirname, "../../env/.env") });
 
-export class TokenService extends DatabaseService<TokenModel> {
+export class TokenService extends BaseService<TokenEntity> {
     constructor() {
-        super(AppDataSource.getRepository(TokenModel));
+        super(TokenEntity, AppDataSource);
     }
 
     GenerateTokens(payload: UserJwtPayload): TokensDto {
@@ -22,18 +22,18 @@ export class TokenService extends DatabaseService<TokenModel> {
         return new TokensDto(accessToken, refreshToken, payload);
     }
 
-    async FindToken(refreshToken: string): Promise<TokenModel | null> {
-        return await this.repository.findOneBy({ RefreshToken: refreshToken });
+    async FindToken(refreshToken: string): Promise<TokenEntity | null> {
+        return await this.findOneBy({ RefreshToken: refreshToken });
     }
 
-    async SaveRefreshToken(refreshToken: string, user: UserModel): Promise<TokenModel> {
-        const ExistingToken = await this.repository.findOneBy({ User: user });
+    async SaveRefreshToken(refreshToken: string, user: UserEntity): Promise<TokenEntity> {
+        const ExistingToken = await this.findOneBy({ User: user });
         if (ExistingToken !== null) {
             ExistingToken.RefreshToken = refreshToken;
-            await this.repository.save(ExistingToken);
+            await this.save(ExistingToken);
             return ExistingToken;
         }
-        return await this.repository.save(new TokenModel(refreshToken, user));
+        return await this.save(new TokenEntity(refreshToken, user));
     }
 
     ValidateAccessToken(accessToken: string): UserJwtPayload {
@@ -59,6 +59,6 @@ export class TokenService extends DatabaseService<TokenModel> {
     }
 
     async RemoveToken(refreshToken: string) {
-        return await this.repository.delete({ RefreshToken: refreshToken });
+        return await this.delete({ RefreshToken: refreshToken });
     }
 }

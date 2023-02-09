@@ -1,7 +1,11 @@
-import { FindOptionsWhere, Repository } from "typeorm";
+import { DataSource, EntityTarget, FindOptionsWhere, Repository } from "typeorm";
 import { BaseEntity } from "../models/base.entity";
 
 export class BaseService<Entity extends BaseEntity> extends Repository<Entity> {
+
+    constructor(entity: EntityTarget<Entity>, dataSource: DataSource) {
+        super(entity, dataSource.createEntityManager());
+    }
 
     async Create(newEntity: Entity): Promise<Entity> {
         return await this.save(newEntity);

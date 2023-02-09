@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { AuthController } from "../controllers/auth.controller";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();
 
@@ -14,10 +15,10 @@ router.post("/sign_up",
     body("password").isLength({ min: 5, max: 50 }),
     authController.SignUp);
 
-router.get("/logout", authController.Logout);
+router.get("/logout", AuthMiddleware, authController.Logout);
 
 router.get("/activate/:link", authController.Activate);
 
-router.get("/refresh", authController.Refresh)
+router.get("/refresh", authController.Refresh);
 
 export { router as AuthRouter };
