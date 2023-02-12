@@ -1,5 +1,5 @@
 import { DataSource, EntityTarget, FindOptionsWhere, Repository } from "typeorm";
-import { BaseEntity } from "../models/base.entity";
+import { BaseEntity } from "../models/entities/base.entity";
 
 export class BaseService<Entity extends BaseEntity> extends Repository<Entity> {
 

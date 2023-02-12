@@ -3,7 +3,7 @@ import { logger } from "../config/logger.config";
 import { HttpError } from "../errors/http-errors";
 
 export function ErrorMiddleware(error: any, req: Request, res: Response, next: NextFunction) {
-    console.error(error);
+    console.log(error.message);
 
     if (error instanceof HttpError) {
         return res.status(error.Status).json({ message: error.message, errors: error.Errors });

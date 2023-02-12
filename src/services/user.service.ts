@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/database.config";
-import { UserEntity } from "../models/user.enity";
+import { UserEntity } from "../models/entities/user.enity";
 import { BaseService } from "./base.service";
 
 export class UserService extends BaseService<UserEntity> {

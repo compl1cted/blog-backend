@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/database.config";
-import { CommentEntity } from "../models/comment.entity";
+import { CommentEntity } from "../models/entities/comment.entity";
 import { BaseService } from "./base.service";
 
 export class CommentService extends BaseService<CommentEntity> {
@@ -7,7 +7,7 @@ export class CommentService extends BaseService<CommentEntity> {
         super(CommentEntity, AppDataSource);
     }
 
-    async GetByPostId(id: number) {
-        this.find({ where: { Id: id } });
+    async FindByPostId(id: number) {
+        return await this.find({ where: { Post: { Id: id } } });
     }
 }

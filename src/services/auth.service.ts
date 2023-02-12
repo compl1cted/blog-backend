@@ -1,7 +1,7 @@
 import { UserService } from "./user.service";
 import { TokenService } from "./token.service";
 import bcrypt from "bcrypt";
-import { UserEntity } from "../models/user.enity";
+import { UserEntity } from "../models/entities/user.enity";
 import { UserJwtPayload } from "../models/dtos/auth/jwt_payload.dto";
 import { TokensDto } from "../models/dtos/auth/tokens.dto";
 import { HttpError } from "../errors/http-errors";
@@ -88,7 +88,7 @@ export class AuthService {
     private async SaveGeneratedTokens(user: UserEntity): Promise<TokensDto> {
         let payload = new UserJwtPayload(user.Id, user.Username, user.Email, user.IsActivated);
         let tokens = this.tokenService.GenerateTokens(payload);
-        await this.tokenService.SaveRefreshToken(tokens.RefreshToken, user);
+        // await this.tokenService.SaveRefreshToken(tokens.RefreshToken, user);
 
         return tokens;
     }

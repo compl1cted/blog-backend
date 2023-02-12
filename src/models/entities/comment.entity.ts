@@ -9,17 +9,19 @@ export class CommentEntity extends BaseEntity {
     Text: string;
     @Column()
     Date: string;
-    @ManyToOne(() => UserEntity, (user) => user.Posts, { eager: true })
+    @ManyToOne(() => UserEntity, (user) => user.Comments, { eager: true })
     @JoinColumn()
     User: UserEntity;
-    @ManyToOne(() => PostEntity)
+    @ManyToOne(() => PostEntity, (post) => post.Comments, { eager: true })
+    @JoinColumn()
     Post: PostEntity;
 
-    constructor(text: string, date: string, post: PostEntity) {
+    constructor(text: string, date: string, post: PostEntity, user: UserEntity) {
         super();
 
         this.Text = text;
         this.Date = date;
         this.Post = post;
+        this.User = user;
     }
 }

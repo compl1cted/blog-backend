@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { PostController } from "../controllers/post.controller";
-import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();
 
@@ -12,5 +11,7 @@ router.get("/:id", postController.FindOne);
 router.get("/", postController.FindAll);
 router.put("/", postController.Update);
 router.delete("/", postController.Delete);
+
+router.get("/user/:id", postController.FindByUserId);
 
 export { router as PostRouter };

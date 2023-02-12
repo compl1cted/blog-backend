@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator/src/validation-result";
-import { CookieLifetime } from "../config/consts";
+import { CookieConfig } from "../config/cookie.config";
 import { HttpError } from "../errors/http-errors";
 import { AuthService } from "../services/auth.service";
 
@@ -13,7 +13,8 @@ export class AuthController {
         try {
             const { username_or_email, password } = req.body;
             const userData = await this.authService.SignIn(username_or_email, password);
-            res.cookie("RefreshToken", userData.RefreshToken, { maxAge: CookieLifetime, httpOnly: true });
+            // res.clearCookie('RefreshToken', { ...CookieConfig });
+            res.cookie("RefreshToken", userData.RefreshToken, { ...CookieConfig });
             return res.json(userData);
         }
         catch (error) {
@@ -29,7 +30,7 @@ export class AuthController {
             }
             const { username, email, password } = req.body;
             const userData = await this.authService.SignUp(username, email, password);
-            res.cookie("RefreshToken", userData.RefreshToken, { maxAge: CookieLifetime, httpOnly: true });
+            res.cookie("RefreshToken", userData.RefreshToken, { ...CookieConfig });
             return res.json(userData);
         }
         catch (error) {
@@ -41,7 +42,7 @@ export class AuthController {
         try {
             const { RefreshToken } = req.cookies;
             await this.authService.Logout(RefreshToken);
-            res.clearCookie("RefreshToken");
+            res.clearCookie("RefreshToken", { ...CookieConfig }).end();
         }
         catch (error) {
             next(error);
@@ -63,7 +64,7 @@ export class AuthController {
         try {
             const { RefreshToken } = req.cookies;
             const userData = await this.authService.Refresh(RefreshToken);
-            res.cookie("RefreshToken", userData.RefreshToken, { maxAge: CookieLifetime, httpOnly: true });
+            // res.cookie("RefreshToken", userData.RefreshToken, { ...CookieConfig });
             res.json(userData);
         }
         catch (error) {

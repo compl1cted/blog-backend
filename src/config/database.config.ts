@@ -1,11 +1,12 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { UserEntity } from "../models/user.enity"
-import { TokenEntity } from "../models/token.entity"
-import { RoleEntity } from "../models/role.entity"
-import { PostEntity } from "../models/post.entity"
+import { UserEntity } from "../models/entities/user.enity"
+import { TokenEntity } from "../models/entities/token.entity"
+import { RoleEntity } from "../models/entities/role.entity"
+import { PostEntity } from "../models/entities/post.entity"
 import dotenv from "dotenv"
 import path from "path"
+import { CommentEntity } from "../models/entities/comment.entity"
 
 dotenv.config({ path: path.resolve(__dirname, "../../env/.env") });
 
@@ -16,7 +17,7 @@ const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [UserEntity, TokenEntity, RoleEntity, PostEntity],
+    entities: [UserEntity, TokenEntity, RoleEntity, PostEntity, CommentEntity],
     synchronize: true,
     logging: false,
 });

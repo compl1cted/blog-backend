@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "./base.entity";
+import { CommentEntity } from "./comment.entity";
 import { UserEntity } from "./user.enity";
 
 @Entity()
@@ -13,6 +14,8 @@ export class PostEntity extends BaseEntity {
     @ManyToOne(() => UserEntity, (user) => user.Posts, { eager: true })
     @JoinColumn()
     User: UserEntity;
+    @OneToMany(() => CommentEntity, (comment) => comment.Post)
+    Comments: CommentEntity[];
 
     constructor(title: string, content: string, date: string, user: UserEntity) {
         super();
