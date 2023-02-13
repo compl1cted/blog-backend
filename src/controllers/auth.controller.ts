@@ -13,7 +13,7 @@ export class AuthController {
         try {
             const { username_or_email, password } = req.body;
             const userData = await this.authService.SignIn(username_or_email, password);
-            // res.clearCookie('RefreshToken', { ...CookieConfig });
+            res.clearCookie('RefreshToken', { ...CookieConfig });
             res.cookie("RefreshToken", userData.RefreshToken, { ...CookieConfig });
             return res.json(userData);
         }
@@ -30,6 +30,7 @@ export class AuthController {
             }
             const { username, email, password } = req.body;
             const userData = await this.authService.SignUp(username, email, password);
+            res.clearCookie("RefreshToken", { ...CookieConfig });
             res.cookie("RefreshToken", userData.RefreshToken, { ...CookieConfig });
             return res.json(userData);
         }
@@ -64,7 +65,8 @@ export class AuthController {
         try {
             const { RefreshToken } = req.cookies;
             const userData = await this.authService.Refresh(RefreshToken);
-            // res.cookie("RefreshToken", userData.RefreshToken, { ...CookieConfig });
+            res.clearCookie("RefreshToken", { ...CookieConfig });
+            res.cookie("RefreshToken", userData.RefreshToken, { ...CookieConfig });
             res.json(userData);
         }
         catch (error) {

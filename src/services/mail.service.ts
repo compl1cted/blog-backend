@@ -21,7 +21,7 @@ export class MailService {
       to: userEmail,
       subject: "Account activation!" + process.env.API_URL,
       text: '',
-      html: MailLayout(userEmail, activationLink)
+      html: MailLayout(activationLink)
     });
   }
 }

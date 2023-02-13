@@ -43,7 +43,7 @@ export class AuthService {
         }
 
         const activationLink = uuid.v4();
-        await this.mailService.SendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
+        await this.mailService.SendActivationMail(email, `${process.env.API_URL}/api/auth/activate/${activationLink}`);
 
         let hashedPassword = await bcrypt.hash(password, 10);
         let newUser = new UserEntity(username, email, hashedPassword, activationLink);
@@ -88,7 +88,7 @@ export class AuthService {
     private async SaveGeneratedTokens(user: UserEntity): Promise<TokensDto> {
         let payload = new UserJwtPayload(user.Id, user.Username, user.Email, user.IsActivated);
         let tokens = this.tokenService.GenerateTokens(payload);
-        // await this.tokenService.SaveRefreshToken(tokens.RefreshToken, user);
+        await this.tokenService.SaveRefreshToken(tokens.RefreshToken, user);
 
         return tokens;
     }
