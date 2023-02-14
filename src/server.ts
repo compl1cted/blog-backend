@@ -6,7 +6,7 @@ import { ConnectToDb } from "./config/database.config";
 import { ErrorMiddleware } from "./middlewares/error.middleware";
 import dotenv from "dotenv";
 import path from "path";
-import { ApiRouter } from "./routes/api.router";
+import { ApiRouter } from "./routers/api.router";
 
 dotenv.config({ path: path.resolve(__dirname, "../env/.env") });
 
@@ -15,7 +15,8 @@ const PORT = process.env.API_PORT || 7000;
 
 app.use(cors({
     credentials: true,
-    origin: "http://localhost:3000"
+    // origin: process.env.FRONT_URL
+    origin: true
 }));
 app.use(cookieParser());
 app.use(express.json());

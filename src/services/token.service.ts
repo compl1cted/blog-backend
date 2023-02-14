@@ -8,6 +8,7 @@ import { UserEntity } from "../models/entities/user.enity";
 import { AppDataSource } from "../config/database.config";
 import dotenv from "dotenv"
 import path from "path"
+import { UserDto } from "../models/dtos/auth/user.dto";
 
 dotenv.config({ path: path.resolve(__dirname, "../../env/.env") });
 
@@ -16,7 +17,7 @@ export class TokenService extends BaseService<TokenEntity> {
         super(TokenEntity, AppDataSource);
     }
 
-    GenerateTokens(payload: UserJwtPayload): TokensDto {
+    GenerateTokens(payload: UserDto): TokensDto {
         const accessToken = jwt.sign({ payload }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
         const refreshToken = jwt.sign({ payload }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
         return new TokensDto(accessToken, refreshToken, payload);

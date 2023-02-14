@@ -1,13 +1,11 @@
+import { UserDto } from "./user.dto";
+
 export class UserJwtPayload {
-    public Id: number;
-    public Username: string;
-    public Email: string;
-    public IsActivated: boolean;
+    public payload: UserDto;
+    public iat: number;
+    public exp: number;
 
     constructor(id: number, username: string, email: string, isActivated: boolean) {
-        this.Id = id
-        this.Username = username;
-        this.Email = email;
-        this.IsActivated = isActivated;
+        this.payload = new UserDto(id, username, email, isActivated);
     }
 }

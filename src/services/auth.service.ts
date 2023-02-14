@@ -71,13 +71,13 @@ export class AuthService {
             throw HttpError.UnauthorizedError();
         }
 
-        const userData = this.tokenService.ValidateRefreshToken(refreshToken);
+        const tokenData = this.tokenService.ValidateRefreshToken(refreshToken);
         const tokenFromDb = await this.tokenService.FindToken(refreshToken);
-        if (!userData || !tokenFromDb) {
+        if (!tokenData || !tokenFromDb) {
             throw HttpError.UnauthorizedError();
         }
 
-        const user = await this.userService.FindOne(userData.Id);
+        const user = await this.userService.FindOne(tokenData.payload.Id);
         if (user === null) {
             throw HttpError.BadRequest("User does not exist!");
         }
@@ -87,7 +87,7 @@ export class AuthService {
 
     private async SaveGeneratedTokens(user: UserEntity): Promise<TokensDto> {
         let payload = new UserJwtPayload(user.Id, user.Username, user.Email, user.IsActivated);
-        let tokens = this.tokenService.GenerateTokens(payload);
+        let tokens = this.tokenService.GenerateTokens(payload.payload);
         await this.tokenService.SaveRefreshToken(tokens.RefreshToken, user);
 
         return tokens;
