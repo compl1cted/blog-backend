@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { CommentController } from "../controllers/comment.controller";
+import { PostService } from "../services/post.service";
+import { UserService } from "../services/user.service";
 
 const router = Router();
 
-const commentController = new CommentController();
+const commentController = new CommentController(
+    new PostService(),
+    new UserService()
+);
 
 router.post("/", commentController.Create);
 router.get("/:id", commentController.FindOne);

@@ -5,10 +5,9 @@ import { HttpError } from "../errors/http-errors";
 import { AuthService } from "../services/auth.service";
 
 export class AuthController {
-    private authService: AuthService;
-    constructor() {
-        this.authService = new AuthService();
-    }
+
+    constructor(private authService: AuthService) { }
+
     public SignIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { username_or_email, password } = req.body;

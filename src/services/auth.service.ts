@@ -1,28 +1,26 @@
 import { UserService } from "./user.service";
 import { TokenService } from "./token.service";
-import bcrypt from "bcrypt";
 import { UserEntity } from "../models/entities/user.enity";
 import { UserJwtPayload } from "../models/dtos/auth/jwt_payload.dto";
 import { TokensDto } from "../models/dtos/auth/tokens.dto";
 import { HttpError } from "../errors/http-errors";
 import { MailService } from "./mail.service";
 import * as uuid from "uuid"
+import { createHmac } from "crypto";
 
 export class AuthService {
-    private userService: UserService;
-    private tokenService: TokenService;
-    private mailService: MailService
-    constructor() {
-        this.userService = new UserService();
-        this.tokenService = new TokenService();
-        this.mailService = new MailService();
-    }
+    constructor(
+        private userService: UserService,
+        private tokenService: TokenService,
+        private mailService: MailService
+    ) { }
+
     async SignIn(username_or_email: string, password: string): Promise<TokensDto> {
         const User = await this.userService.FindByUsernameOrEmail(username_or_email);
         if (!User) {
             throw HttpError.BadRequest("User not found!");
         }
-        let isMatch = bcrypt.compare(password, User.Password);
+        let isMatch = createHmac("sha256", password).digest("hex") === User.Password;
         if (!isMatch) {
             throw HttpError.BadRequest("Password is invalid!");
         }
@@ -45,7 +43,7 @@ export class AuthService {
         const activationLink = uuid.v4();
         await this.mailService.SendActivationMail(email, `${process.env.API_URL}/api/auth/activate/${activationLink}`);
 
-        let hashedPassword = await bcrypt.hash(password, 10);
+        let hashedPassword = createHmac("sha256", password).digest("hex");
         let newUser = new UserEntity(username, email, hashedPassword, activationLink);
         await this.userService.Create(newUser);
 

@@ -20,8 +20,7 @@ export class BaseService<Entity extends BaseEntity> extends Repository<Entity> {
     }
 
     async Exists(id: number): Promise<Boolean> {
-        let Row = await this.exist({ where: { Id: id } as FindOptionsWhere<Entity> });
-        return Row !== null;
+        return await this.exist({ where: { Id: id } as FindOptionsWhere<Entity> });
     }
 
     async Update(updateEntity: Entity) {

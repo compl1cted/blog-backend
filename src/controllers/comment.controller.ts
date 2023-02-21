@@ -10,14 +10,14 @@ import { UserService } from "../services/user.service";
 import { BaseController } from "./base.controller";
 
 export class CommentController extends BaseController<CommentService, CommentEntity> {
-    private postService: PostService;
-    private userService: UserService;
-    constructor() {
-        super(new CommentService());
 
-        this.postService = new PostService();
-        this.userService = new UserService();
+    constructor(
+        private postService: PostService,
+        private userService: UserService
+    ) {
+        super(new CommentService());
     }
+
     public Create = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { comment } = req.body;

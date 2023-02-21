@@ -1,16 +1,16 @@
 import { UserJwtPayload } from "../models/dtos/auth/jwt_payload.dto";
 import { TokenEntity } from "../models/entities/token.entity";
 import { BaseService } from "./base.service";
-import jwt from "jsonwebtoken"
+import { sign, verify } from "jsonwebtoken"
 import { TokensDto } from "../models/dtos/auth/tokens.dto";
 import { HttpError } from "../errors/http-errors";
 import { UserEntity } from "../models/entities/user.enity";
 import { AppDataSource } from "../config/database.config";
-import dotenv from "dotenv"
-import path from "path"
+import { config } from "dotenv"
+import { resolve } from "path"
 import { UserDto } from "../models/dtos/auth/user.dto";
 
-dotenv.config({ path: path.resolve(__dirname, "../../env/.env") });
+config({ path: resolve(__dirname, "../../env/.env") });
 
 export class TokenService extends BaseService<TokenEntity> {
     constructor() {
@@ -18,8 +18,8 @@ export class TokenService extends BaseService<TokenEntity> {
     }
 
     GenerateTokens(payload: UserDto): TokensDto {
-        const accessToken = jwt.sign({ payload }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
-        const refreshToken = jwt.sign({ payload }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
+        const accessToken = sign({ payload }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
+        const refreshToken = sign({ payload }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
         return new TokensDto(accessToken, refreshToken, payload);
     }
 
@@ -39,7 +39,7 @@ export class TokenService extends BaseService<TokenEntity> {
 
     ValidateAccessToken(accessToken: string): UserJwtPayload {
         try {
-            const verifyResult = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
+            const verifyResult = verify(accessToken, process.env.JWT_ACCESS_SECRET);
             const userData = verifyResult as UserJwtPayload;
             return userData;
         }
@@ -50,7 +50,7 @@ export class TokenService extends BaseService<TokenEntity> {
 
     ValidateRefreshToken(refreshToken: string): UserJwtPayload {
         try {
-            const verifyResult = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            const verifyResult = verify(refreshToken, process.env.JWT_REFRESH_SECRET);
             const userData = verifyResult as UserJwtPayload;
             return userData;
         }

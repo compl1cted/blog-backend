@@ -8,10 +8,8 @@ import { UserService } from "../services/user.service";
 import { BaseController } from "./base.controller";
 
 export class PostController extends BaseController<PostService, PostEntity> {
-    private userService: UserService
-    constructor() {
+    constructor(private userService: UserService) {
         super(new PostService());
-        this.userService = new UserService();
     }
 
     public Create = async (req: Request, res: Response, next: NextFunction) => {
