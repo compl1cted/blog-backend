@@ -26,7 +26,6 @@ export class CommentController extends BaseController<CommentService, CommentEnt
             if (!user || !post) return res.json("Server Error");
             if (post === null) return res.status(400).json("User does not exist!");
             const commentData = await this.Service.Create(new CommentEntity(comment.Text, comment.Date, post, user));
-            console.log(commentData);
             res.json(commentData);
         } catch (error) {
             next(error);
@@ -37,7 +36,6 @@ export class CommentController extends BaseController<CommentService, CommentEnt
         try {
             const { id } = req.params;
             const comments = await this.Service.FindByPostId(Number(id));
-            console.log(comments);
             res.json(comments);
         } catch (error) {
             next(error);
