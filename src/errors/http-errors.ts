@@ -14,4 +14,8 @@ export class HttpError extends Error {
     static BadRequest(message: string, errors: any[] = []) {
         return new HttpError(400, message, errors);
     }
+
+    static ServerError(message: string, errors: any[] = []) {
+        new HttpError(500, message, errors);
+    }
 }
