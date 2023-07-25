@@ -6,7 +6,7 @@ export class PostService {
     constructor(private readonly postRepository: PostRepository) {}
 
     async create(createPostDto: CreatePostDto): Promise<PostDto> {
-        const newPost = await this.postRepository.create(createPostDto);
+        const newPost = await this.postRepository.save(createPostDto);
         return new PostDto(newPost);
     }
 

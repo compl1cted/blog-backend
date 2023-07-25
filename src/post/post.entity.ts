@@ -28,9 +28,9 @@ export class PostEntity extends BaseEntity {
     constructor(createPostDto: CreatePostDto) {
         super();
 
-        this.title = createPostDto.title;
-        this.content = createPostDto.content;
-        this.date = createPostDto.date;
-        this.userId = createPostDto.userId;
+        this.title = createPostDto?.title;
+        this.content = createPostDto?.content;
+        this.date = createPostDto?.date;
+        this.userId = createPostDto?.userId;
     }
 }

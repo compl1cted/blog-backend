@@ -2,9 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator/src/validation-result";
 import { parse } from "path";
 import { HttpError } from "../errors/http-errors";
-import { PostEntity } from "./post.entity";
 import { PostService } from "./post.service";
-import { UserService } from "../user/user.service";
 import { CreatePostDto, PostDto } from "./post.dto";
 
 export class PostController {

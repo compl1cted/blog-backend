@@ -1,12 +1,12 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import dotenv from "dotenv"
-import path from "path"
+import { resolve } from "path"
+import { config } from "dotenv"
 
-dotenv.config({ path: path.resolve(__dirname, "../../env/.env") });
+config({ path: resolve(__dirname, "../../env/.env") });
 
 const AppDataSource = new DataSource({
-    type: process.env.DB_DIALECT,
+    type: "postgres",
     host: process.env.DB_HOST,
     port: 5434,
     username: process.env.DB_USER,

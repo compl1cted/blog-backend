@@ -6,7 +6,7 @@ export class UserService {
     constructor(private readonly userRepository: UserRepository) {}
 
     async create(createUserDto: CreateUserDto): Promise<UserDto> {
-        const newUser = await this.userRepository.create(createUserDto);
+        const newUser = await this.userRepository.save(createUserDto);
         return new UserDto(newUser);
     }
 

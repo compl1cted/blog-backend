@@ -1,12 +1,13 @@
 import { UserService } from "../user/user.service";
 import { TokenService } from "../token/token.service";
-import { TokenPayload } from "../token/token.dto";
+import { JwtPayload } from "jsonwebtoken"
 import { TokensDto } from "./auth.dto";
 import { HttpError } from "../errors/http-errors";
 import { MailService } from "../mail/mail.service";
-import * as uuid from "uuid"
+import { v4 } from "uuid"
 import { createHmac } from "crypto";
 import { UserDto } from "../user/user.dto";
+import { log } from "console";
 
 export class AuthService {
     constructor(
@@ -20,6 +21,7 @@ export class AuthService {
         if (!user) {
             throw HttpError.BadRequest("User not found!");
         }
+        
         let isMatch = createHmac("sha256", password).digest("hex") === user.password;
         if (!isMatch) {
             throw HttpError.BadRequest("Password is invalid!");
@@ -40,7 +42,7 @@ export class AuthService {
             throw HttpError.BadRequest("Email already exist!");
         }
 
-        const activationLink = uuid.v4();
+        const activationLink = v4();
         await this.mailService.SendActivationMail(email, `${process.env.API_URL}/api/auth/activate/${activationLink}`);
 
         let hashedPassword = createHmac("sha256", password).digest("hex");
@@ -48,7 +50,6 @@ export class AuthService {
         if (!newUser) {
             throw HttpError.ServerError("Failed to create user!");
         }
-
         let tokens = this.SaveGeneratedTokens(newUser);
         return tokens;
     }
@@ -73,6 +74,11 @@ export class AuthService {
 
         const tokenData = this.tokenService.ValidateRefreshToken(refreshToken);
         const tokenFromDb = await this.tokenService.findToken(refreshToken);
+        
+        if (!tokenData) {
+            throw HttpError.UnauthorizedError();
+        }
+
         if (!tokenData.payload.id || !tokenFromDb) {
             throw HttpError.UnauthorizedError();
         }

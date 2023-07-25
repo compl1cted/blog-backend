@@ -6,7 +6,7 @@ export class CommentService {
     constructor(private readonly commentRepository: CommentRepository) {}
 
     async create(createCommentDto: CreateCommentDto) {
-        return await this.commentRepository.create(createCommentDto);
+        return await this.commentRepository.save(createCommentDto);
     }
 
     async findAll() {

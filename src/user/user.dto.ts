@@ -20,5 +20,6 @@ export class UserDto {
         this.username = userEntity.username;
         this.email = userEntity.email;
         this.isActivated = userEntity.isActivated;
+        this.password = userEntity.password;
     }
 }

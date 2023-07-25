@@ -53,7 +53,7 @@ export class AuthController {
         try {
             const activationLink = req.params.link;
             await this.authService.Activate(activationLink);
-            res.redirect(process.env.FRONT_URL);
+            res.redirect(process.env.FRONT_URL || "");
         }
         catch (error) {
             next(error);
