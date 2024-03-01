@@ -1,23 +1,25 @@
 import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator/src/validation-result";
-import { HttpError } from "../errors/http-errors";
 import { UserService } from "./user.service";
 import { UserDto } from "./user.dto";
 
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    public findOne = async (req: Request, res: Response, next: NextFunction) => {
+    async findById(req: Request, res: Response, next: NextFunction) {
         try {
-            const id = req.params.id;
-            const user = await this.userService.findOne(+id);
+            const id = Number(req.params.id);
+            if (!id || isNaN(id)) {
+                res.json("User id must be a number!").status(404);
+            }
+            
+            const user = await this.userService.findOne(id);
             res.json(user).status(200);
         } catch (error) {
             next(error);
         }
     }
 
-    public findAll = async (req: Request, res: Response, next: NextFunction) => {
+    async findAll(req: Request, res: Response, next: NextFunction) {
         try {
             const users = await this.userService.findAll();
             res.json(users).status(200);
@@ -26,7 +28,7 @@ export class UserController {
         }
     }
 
-    public update = async (req: Request, res: Response, next: NextFunction) => {
+    async update(req: Request, res: Response, next: NextFunction) {
         try {
             const id = req.params.id;
             const updatedUser = req.body as Partial<UserDto>;
@@ -37,7 +39,7 @@ export class UserController {
         }
     }
 
-    public delete = async (req: Request, res: Response, next: NextFunction) => {
+    async delete(req: Request, res: Response, next: NextFunction) {
         try {
             const { userId } = req.body;
             const result = await this.userService.delete(userId);

@@ -1,20 +1,37 @@
 import { TokenEntity } from "./token.entity";
-import { BaseRepository } from "../database/base.repository";
+import { Repository } from "typeorm";
+import { CreateTokenDto, TokenDto, TokenEntityToDto, UpdateTokenDto } from "./token.dto";
+import { AppDataSource } from "../config/database.config";
 
-export class TokenRepository extends BaseRepository<TokenEntity> {
+export class TokenRepositoryTypeORM {
+    private readonly repository: Repository<TokenEntity>;
     constructor() {
-        super(TokenEntity);
+        this.repository = new Repository<TokenEntity>(TokenEntity, AppDataSource.createEntityManager());
     }
 
-    async FindToken(refreshToken: string): Promise<TokenEntity | null> {
-        return await this.findOneBy({ refreshToken: refreshToken });
+    async create(createTokenDto: CreateTokenDto): Promise<TokenDto | null> {
+        const newTokenEntity = await this.repository.save(createTokenDto);
+        if (!newTokenEntity) return null;
+        return TokenEntityToDto(newTokenEntity);
     }
 
-    async FindTokenByUserId(id: number):Promise<TokenEntity | null>{
-        return await this.findOneBy({userId: id});
+    async findTokenByValue(refreshToken: string): Promise<TokenDto | null> {
+        return await this.repository.findOneBy({ refreshToken: refreshToken });
     }
 
-    async RemoveToken(refreshToken: string) {
-        return await this.delete({ refreshToken: refreshToken });
+    async findTokenByUserId(id: number):Promise<TokenDto | null>{
+        return await this.repository.findOneBy({userId: id});
+    }
+
+    async update(id: number, updateTokenDto: UpdateTokenDto): Promise<void> {
+        await this.repository.update(id, updateTokenDto);
+    }
+
+    async updateToken(id: number, newToken: string): Promise<void> {
+        await this.repository.update(id, {refreshToken: newToken});
+    }
+
+    async deleteTokenByValue(refreshToken: string): Promise<void> {
+        await this.repository.delete({ refreshToken: refreshToken });
     }
 }

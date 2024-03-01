@@ -15,11 +15,18 @@ export class UserDto {
     isActivated: boolean;
     activationLink: string;
 
-    constructor(userEntity: UserEntity) {
-        this.id = userEntity.id;
-        this.username = userEntity.username;
-        this.email = userEntity.email;
-        this.isActivated = userEntity.isActivated;
-        this.password = userEntity.password;
+    constructor(id: number, username: string, email: string, isActivated: boolean, password: string) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.isActivated = isActivated;
+        this.password = password;
     }
+}
+
+export type UpdateUserDto = Partial<UserDto>;
+
+export const UserEntityToDto = (userEntity: UserEntity) => {
+    const { id, username, email, isActivated, password } = userEntity;
+    return new UserDto(id, username, email, isActivated, password);
 }

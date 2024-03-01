@@ -1,11 +1,12 @@
 import { Column, Entity, OneToMany, OneToOne } from "typeorm";
 import { PostEntity } from "../post/post.entity";
-import { BaseEntity } from "../database/base.entity";
+import { BaseEntityTypeORM } from "../config/entity.typeorm";
 import { TokenEntity } from "../token/token.entity";
 import { CommentEntity } from "../comment/comment.entity";
+import { CreateUserDto } from "./user.dto";
 
 @Entity()
-export class UserEntity extends BaseEntity {
+export class UserEntity extends BaseEntityTypeORM {
     @Column()
     username: string;
 
@@ -30,12 +31,12 @@ export class UserEntity extends BaseEntity {
     @OneToMany(() => CommentEntity, (comment) => comment.user)
     comments: CommentEntity[];
 
-    constructor(username: string, email: string, password: string, activationLink: string) {
+    constructor(createUserDto: CreateUserDto) {
         super();
 
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.activationLink = activationLink;
+        this.username = createUserDto?.username;
+        this.email = createUserDto?.email;
+        this.password = createUserDto?.password;
+        this.activationLink = createUserDto?.activationLink;
     }
 }

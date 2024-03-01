@@ -1,21 +1,18 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
-import { BaseEntity } from "../database/base.entity";
+import { BaseEntityTypeORM } from "../config/entity.typeorm";
 import { CommentEntity } from "../comment/comment.entity";
 import { UserEntity } from "../user/user.entity";
 import { CreatePostDto } from "./post.dto";
 
 @Entity()
-export class PostEntity extends BaseEntity {
+export class PostEntity extends BaseEntityTypeORM {
     @Column()
     title: string;
 
     @Column()
     content: string;
 
-    @Column()
-    date: string;
-
-    @ManyToOne(() => UserEntity, (user) => user.posts, { eager: true })
+    @ManyToOne(() => UserEntity, (user) => user.posts)
     @JoinColumn()
     user: UserEntity;
 
@@ -30,7 +27,6 @@ export class PostEntity extends BaseEntity {
 
         this.title = createPostDto?.title;
         this.content = createPostDto?.content;
-        this.date = createPostDto?.date;
         this.userId = createPostDto?.userId;
     }
 }

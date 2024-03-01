@@ -8,14 +8,18 @@ export class HttpError extends Error {
     }
 
     static UnauthorizedError(error?: any) {
-        return new HttpError(401, "Unauthorized Error!", error);
+        return new HttpError(401, `Unauthorized Error! ${error}`);
     }
 
     static BadRequest(message: string, errors: any[] = []) {
         return new HttpError(400, message, errors);
     }
 
+    static NotFound(message: string) {
+        return new HttpError(404, message);
+    }
+
     static ServerError(message: string, errors: any[] = []) {
-        new HttpError(500, message, errors);
+        return new HttpError(500, message, errors);
     }
 }

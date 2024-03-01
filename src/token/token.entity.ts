@@ -1,18 +1,18 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
-import { BaseEntity } from "../database/base.entity";
+import { BaseEntityTypeORM } from "../config/entity.typeorm";
 import { UserEntity } from "../user/user.entity";
 import { CreateTokenDto } from "./token.dto";
 
 @Entity()
-export class TokenEntity extends BaseEntity {
-    @Column()
+export class TokenEntity extends BaseEntityTypeORM {
+    @Column({ unique: true })
     refreshToken: string;
 
-    @OneToOne(() => UserEntity, { nullable: false, eager: true})
+    @OneToOne(() => UserEntity, { nullable: false})
     @JoinColumn()
     user: UserEntity;
 
-    @Column()
+    @Column({ unique: false })
     userId: number;
 
     constructor(createTokenDto: CreateTokenDto) {

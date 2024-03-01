@@ -8,5 +8,5 @@ export const CookieConfig: CookieOptions = {
     // maxAge: CookieLifetime,
     path: '/',
     httpOnly: true,
-    sameSite: "strict",
+    // sameSite: "strict",
 }

@@ -1,16 +1,11 @@
-import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator/src/validation-result";
-import { parse } from "path";
-import { HttpError } from "../errors/http-errors";
-import { CommentEntity } from "./comment.entity";
+import { Request, Response, NextFunction } from "express";
 import { CommentService } from "./comment.service";
 import { CommentDto, CreateCommentDto } from "./comment.dto";
 
 export class CommentController {
-
     constructor(private readonly commentService: CommentService) {}
 
-    public create = async (req: Request, res: Response, next: NextFunction) => {
+    async create(req: Request, res: Response, next: NextFunction) {
         try {
             const comment = req.body as CreateCommentDto;
             const commentData = await this.commentService.create(comment);
@@ -19,37 +14,50 @@ export class CommentController {
             next(error);
         }
     }
+    
+    async findAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const entities = await this.commentService.findAll();
+            res.json(entities);``
+        } catch (error) {
+            next(error);
+        }
+    }
 
-    public findOne = async (req: Request, res: Response, next: NextFunction) => {
+    async findById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const entity = await this.commentService.findOne(+id);
+            const entity = await this.commentService.findOneById(+id);
             res.json(entity);
         } catch (error) {
             next(error);
         }
     }
-    public findAll = async (req: Request, res: Response, next: NextFunction) => {
+
+    async findByUserId(req: Request, res: Response, next: NextFunction) {
         try {
-            const entities = await this.commentService.findAll();
+            const { userId } = req.params;
+            const entities = await this.commentService.findByUserId(+userId);
             res.json(entities);
         } catch (error) {
             next(error);
         }
     }
-
     
-    public findByPostId = async (req: Request, res: Response, next: NextFunction) => {
+    async findByPostId(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+            if (!id || isNaN(+id)) {
+                return res.json('Invalid Post Id!').status(404);
+            }
             const comments = await this.commentService.findByPostId(+id);
-            res.json(comments);
+            res.json(comments).status(200);
         } catch (error) {
             next(error);
         }
     }
     
-    public update = async (req: Request, res: Response, next: NextFunction) => {
+    async update(req: Request, res: Response, next: NextFunction) {
         try {
             const id = req.params.id;
             const comment = req.body as Partial<CommentDto>;
@@ -60,7 +68,7 @@ export class CommentController {
         }
     }
 
-    public delete = async (req: Request, res: Response, next: NextFunction) => {
+    async delete(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
             const postData = await this.commentService.delete(+id);

@@ -1,18 +1,13 @@
-import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator/src/validation-result";
-import { parse } from "path";
-import { HttpError } from "../errors/http-errors";
+import { Request, Response, NextFunction } from "express";
 import { PostService } from "./post.service";
 import { CreatePostDto, PostDto } from "./post.dto";
 
 export class PostController {
-    constructor(
-        private readonly postService: PostService
-        ) {}
+    constructor(private readonly postService: PostService) {}
 
-    public create = async (req: Request, res: Response, next: NextFunction) => {
+    async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const newPost = req.body as CreatePostDto;
+            const newPost: CreatePostDto = req.body;
             const postData = await this.postService.create(newPost);
             res.json(postData);
         } catch (error) {
@@ -20,7 +15,7 @@ export class PostController {
         }
     }
 
-    public findByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    async findByUserId(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
             const posts = await this.postService.findByUserId(+id);
@@ -30,7 +25,18 @@ export class PostController {
         }
     }
 
-    public findOne = async (req: Request, res: Response, next: NextFunction) => {
+    async findByTitle(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { title } = req.params;
+            const posts = await this.postService.findByTitle(title);
+            res.json(posts);
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async findOne(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
             const post = await this.postService.findOne(+id);
@@ -40,7 +46,7 @@ export class PostController {
         }
     }
 
-    public findAll = async (req: Request, res: Response, next: NextFunction) => {
+    async findAll(req: Request, res: Response, next: NextFunction) {
         try {
             const posts = await this.postService.findAll();
             res.json(posts);
@@ -49,7 +55,7 @@ export class PostController {
         }
     }
 
-    public update = async (req: Request, res: Response, next: NextFunction) => {
+    async update(req: Request, res: Response, next: NextFunction) {
         try {
             const id = req.params.id;
             const post = req.body as Partial<PostDto>;
@@ -60,7 +66,7 @@ export class PostController {
         }
     }
 
-    public delete = async (req: Request, res: Response, next: NextFunction) => {
+    async delete(req: Request, res: Response, next: NextFunction) {
         try {
             const id = req.params.id;
             const result = await this.postService.delete(+id);
