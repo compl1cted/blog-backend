@@ -1,17 +1,16 @@
 import { Router } from "express";
 import { CommentController } from "./comment.controller";
 import { CommentService } from "./comment.service";
-import { CommentRepositoryTypeORM } from "./comment.repository";
+import {getRepository} from "../common/typeorm/orm.config";
+import {CommentEntity} from "./entity/comment.entity";
 
 export class CommentModule {
     private readonly router: Router;
     private readonly controller: CommentController;
     private readonly service: CommentService;
-    private readonly repository: CommentRepositoryTypeORM;
 
     constructor() {
-        this.repository = new CommentRepositoryTypeORM();
-        this.service = new CommentService(this.repository);
+        this.service = new CommentService(getRepository(CommentEntity));
         this.controller = new CommentController(this.service);
         this.router = Router();
         this.router.post("/", this.controller.create.bind(this.controller));

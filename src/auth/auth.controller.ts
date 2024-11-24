@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { CookieConfig } from "../config/cookie.config";
+import { CookieConfig } from "../common/cookie/cookie.config";
 import { AuthService } from "./auth.service";
-import { HttpError } from "../utils/http-errors";
-import { Token } from "../token/token.type";
+import { HttpError } from "../common/error/http-errors";
 
 export class AuthController {
 
@@ -21,7 +20,7 @@ export class AuthController {
     }
 
     async signUp(req: Request, res: Response, next: NextFunction) {
-        try {      
+        try {
             const { username, email, password } = req.body;
             const userData = await this.authService.signUp(username, email, password);
             res.cookie("RefreshToken", userData.refreshToken, CookieConfig);
@@ -66,17 +65,17 @@ export class AuthController {
         }
     }
 
-    async middleware(req: Request, res: Response, next: NextFunction) {
+    async middleware(req: Request, _res: Response, next: NextFunction) {
         try {
             const accessToken = req.headers.authorization?.split(" ")[1];
             if (!accessToken) {
                 return next(HttpError.UnauthorizedError("Token is undefined!"));
             }
-            const userData = this.authService.validate(accessToken, Token.Access);
+            const userData = this.authService.validateToken(accessToken);
             if (!userData) {
                 return next(HttpError.UnauthorizedError("Failed to validate Token"));
             }
-    
+
             next();
         } catch (error) {
             next(HttpError.UnauthorizedError(error));

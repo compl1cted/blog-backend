@@ -10,6 +10,4 @@ export class BaseEntityTypeORM {
 
     @UpdateDateColumn()
     updated_at: Date;
-
-    constructor() {}
 }

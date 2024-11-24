@@ -1,8 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
-import { BaseEntityTypeORM } from "../config/entity.typeorm";
-import { CommentEntity } from "../comment/comment.entity";
-import { UserEntity } from "../user/user.entity";
-import { CreatePostDto } from "./post.dto";
+import { BaseEntityTypeORM } from "../../common/typeorm/entity.typeorm";
+import { CommentEntity } from "../../comment/entity/comment.entity";
+import { UserEntity } from "../../user/entity/user.entity";
 
 @Entity()
 export class PostEntity extends BaseEntityTypeORM {
@@ -21,12 +20,4 @@ export class PostEntity extends BaseEntityTypeORM {
 
     @OneToMany(() => CommentEntity, (comment) => comment.post)
     comments: CommentEntity[];
-
-    constructor(createPostDto: CreatePostDto) {
-        super();
-
-        this.title = createPostDto?.title;
-        this.content = createPostDto?.content;
-        this.userId = createPostDto?.userId;
-    }
 }

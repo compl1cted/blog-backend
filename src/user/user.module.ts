@@ -1,17 +1,16 @@
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 import { Router } from "express";
-import { UserRepositoryTypeORM } from "./user.repository";
+import {getRepository} from "../common/typeorm/orm.config";
+import {UserEntity} from "./entity/user.entity";
 
 export class UserModule {
     private readonly router: Router;
     private readonly controller: UserController;
     private readonly service: UserService;
-    private readonly repository: UserRepositoryTypeORM;
 
     constructor() {
-        this.repository = new UserRepositoryTypeORM();
-        this.service = new UserService(this.repository);
+        this.service = new UserService(getRepository(UserEntity));
         this.controller = new UserController(this.service);
 
         this.router = Router();
@@ -21,11 +20,11 @@ export class UserModule {
         this.router.delete("/:id", this.controller.delete.bind(this.controller));
     }
 
-    public getService(): UserService {
+    get getService(): UserService {
         return this.service;
     }
 
-    public getRouter(): Router {
+    get getRouter(): Router {
         return this.router;
     }
 

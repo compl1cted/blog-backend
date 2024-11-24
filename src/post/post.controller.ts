@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { PostService } from "./post.service";
-import { CreatePostDto, PostDto } from "./post.dto";
+import { PostDto } from "./dto/post.dto";
+import {CreatePostDto} from "./dto/create-post.dto";
 
 export class PostController {
     constructor(private readonly postService: PostService) {}

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "./user.service";
-import { UserDto } from "./user.dto";
+import { UserDto } from "./dto/user.dto";
 
 export class UserController {
     constructor(private readonly userService: UserService) {}
@@ -11,7 +11,7 @@ export class UserController {
             if (!id || isNaN(id)) {
                 res.json("User id must be a number!").status(404);
             }
-            
+
             const user = await this.userService.findOne(id);
             res.json(user).status(200);
         } catch (error) {

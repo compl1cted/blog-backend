@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CommentService } from "./comment.service";
-import { CommentDto, CreateCommentDto } from "./comment.dto";
+import { CommentDto } from "./dto/comment.dto";
+import {CreateCommentDto} from "./dto/create-comment.dto";
 
 export class CommentController {
     constructor(private readonly commentService: CommentService) {}
@@ -14,7 +15,7 @@ export class CommentController {
             next(error);
         }
     }
-    
+
     async findAll(req: Request, res: Response, next: NextFunction) {
         try {
             const entities = await this.commentService.findAll();
@@ -43,7 +44,7 @@ export class CommentController {
             next(error);
         }
     }
-    
+
     async findByPostId(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -56,7 +57,7 @@ export class CommentController {
             next(error);
         }
     }
-    
+
     async update(req: Request, res: Response, next: NextFunction) {
         try {
             const id = req.params.id;

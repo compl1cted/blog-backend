@@ -1,36 +1,44 @@
-import { HttpError } from "../utils/http-errors";
-import { CommentDto, CreateCommentDto } from "./comment.dto";
-import { CommentRepositoryTypeORM } from "./comment.repository";
+import { HttpError } from "../common/error/http-errors";
+import { CommentDto } from "./dto/comment.dto";
+import { Repository } from "typeorm";
+import { CommentEntity } from "./entity/comment.entity";
+import {CreateCommentDto} from "./dto/create-comment.dto";
+import {plainToInstance} from "class-transformer";
 
 export class CommentService {
-    constructor(private readonly repository: CommentRepositoryTypeORM) {}
+    constructor(private readonly repository: Repository<CommentEntity>) {}
 
-    async create(createCommentDto: CreateCommentDto) {
-        const comment = await this.repository.create(createCommentDto);
+    async create(dto: CreateCommentDto) {
+        const comment = await this.repository.save(this.repository.create(dto));
         if (!comment) throw HttpError.ServerError("Failed to add comment!");
-        return comment;
+        return plainToInstance(CommentDto, comment, {excludeExtraneousValues: true });
     }
 
     async findAll() {
-        return await this.repository.findAll();
+        const comments = await this.repository.find();
+        return plainToInstance(CommentDto, comments, {excludeExtraneousValues: true });
     }
-    
+
     async findOneById(id: number) {
-        const comment = await this.repository.findOneById(id);
+        const comment = await this.repository.findOneBy({ id });
         if (!comment) throw HttpError.BadRequest("Comment not found!");
-        return comment;
+        return plainToInstance(CommentDto, comment, {excludeExtraneousValues: true });
     }
 
     async findByUserId(userId: number): Promise<CommentDto[]> {
-        return await this.repository.findByUserId(userId);
+        const comments = await this.repository.findBy({ userId });
+        return plainToInstance(CommentDto, comments, {excludeExtraneousValues: true });
     }
 
     async findByPostId(postId: number): Promise<CommentDto[]> {
-        return await this.repository.findByPostId(postId);
+        const comments = await this.repository.findBy({ postId });
+        return plainToInstance(CommentDto, comments, {excludeExtraneousValues: true });
     }
 
     async update(id: number, updateDto: Partial<CommentDto>) {
-        return await this.repository.update(id, updateDto);
+        await this.repository.update(id, updateDto);
+        const comment = await this.repository.findOneBy({ id });
+        return plainToInstance(CommentDto, comment, {excludeExtraneousValues: true });
     }
 
     async delete(id: number) {

@@ -1,41 +1,52 @@
-import { HttpError } from "../utils/http-errors";
-import { CreatePostDto, PostDto } from "./post.dto";
-import { PostRepositoryTypeORM } from "./post.repository";
+import { Repository } from "typeorm";
+import { plainToInstance } from "class-transformer";
+import { HttpError } from "../common/error/http-errors";
+import { PostEntity } from "./entity/post.entity";
+import { CreatePostDto } from "./dto/create-post.dto";
+import { PostDto } from "./dto/post.dto";
 
 export class PostService {
-    constructor(private readonly postRepository: PostRepositoryTypeORM) {}
+    constructor(private readonly postRepository: Repository<PostEntity>) {}
 
-    async create(createPostDto: CreatePostDto): Promise<PostDto> {
-        const newPost = await this.postRepository.create(createPostDto);
+    async create(dto: CreatePostDto): Promise<PostDto> {
+        const newPost = await this.postRepository.save(this.postRepository.create(dto));
         if (!newPost) {
             throw HttpError.ServerError("Failed to create user!");
         }
 
-        return newPost;
+        return plainToInstance(PostDto, newPost, { excludeExtraneousValues: true });
     }
 
-    async findByUserId(id: number) {
-        return await this.postRepository.findByUserId(id);
+    async findByUserId(userId: number) {
+        const posts = await this.postRepository.findBy({ userId });
+
+        return plainToInstance(PostDto, posts, { excludeExtraneousValues: true });
     }
 
     async findByTitle(title: string): Promise<PostDto[]> {
-        return await this.postRepository.findByTitle(title);
+        const posts = await this.postRepository.findBy({ title });
+        return plainToInstance(PostDto, posts, { excludeExtraneousValues: true });
     }
 
     async findOne(id: number): Promise<PostDto | null> {
-        const post = await this.postRepository.findOneById(id);
+        const post = await this.postRepository.findOneBy({ id });
         if (!post) {
             throw new Error();
         }
-        return post;
+        return plainToInstance(PostDto, post, { excludeExtraneousValues: true });
     }
 
     async findAll() {
-        return await this.postRepository.findAll();
+        const posts = await this.postRepository.find();
+
+        return plainToInstance(PostDto, posts, { excludeExtraneousValues: true });
     }
 
     async update(id: number, updateDto: Partial<PostDto>) {
-        return await this.postRepository.update(id, updateDto);
+        await this.postRepository.update(id, updateDto);
+        const updatedPost = await this.postRepository.findOneBy({ id });
+
+        return plainToInstance(PostDto, updatedPost, { excludeExtraneousValues: true });
     }
 
     async delete(id: number): Promise<void> {

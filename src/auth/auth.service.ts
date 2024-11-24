@@ -1,18 +1,20 @@
 import { UserService } from "../user/user.service";
-import { TokenService } from "../token/token.service";
-import { AuthResponse } from "./auth.dto";
-import { HttpError } from "../utils/http-errors";
+import { AuthResponse } from "./dto/auth-response.dto";
+import { HttpError } from "../common/error/http-errors";
 import { MailService } from "../mail/mail.service";
 import { createHmac, randomUUID } from "crypto";
-import { UserDto } from "../user/user.dto";
-import { PASSWORD_HASHING_METHOD } from "../config/consts";
-import { Token } from "../token/token.type";
-import { TokenPayload } from "../token/token.dto";
+import { UserDto } from "../user/dto/user.dto";
+import { PASSWORD_HASHING_METHOD } from "../common/consts";
+import { TokenPayload } from "../user/dto/token.dto";
+import {sign, verify} from "jsonwebtoken";
+import { AccessTokenConfig, RefreshTokenConfig } from "./token.config";
+import {ConfigService} from "../config/config.service";
+import {plainToInstance} from "class-transformer";
 
 export class AuthService {
     constructor(
+        private readonly configService: ConfigService,
         private readonly userService: UserService,
-        private readonly tokenService: TokenService,
         private readonly mailService: MailService
     ) { }
 
@@ -38,7 +40,7 @@ export class AuthService {
         if (emailExists) {
             throw HttpError.BadRequest('Email already exist!');
         }
-        
+
         const activationLink = randomUUID();
         await this.mailService.SendActivationMail(email, `${process.env.API_URL}:${process.env.API_PORT}/api/auth/activate/${activationLink}`);
 
@@ -51,7 +53,7 @@ export class AuthService {
     }
 
     async logout(refreshToken: string) {
-        return await this.tokenService.remove(refreshToken);
+        return await this.userService.removeToken(refreshToken);
     }
 
     async activate(activationLink: string) {
@@ -68,28 +70,33 @@ export class AuthService {
             throw HttpError.UnauthorizedError("Refresh token is undefined!");
         }
 
-        const tokenData = this.tokenService.validateToken(refreshToken, Token.Refresh);
-        const tokenFromDb = await this.tokenService.findToken(refreshToken);
-        
+        const tokenData = this.validateToken(refreshToken);
+        const user = await this.userService.findByToken(refreshToken);
+
         if (!tokenData) {
             throw HttpError.UnauthorizedError("Failed to validate refresh token!");
         }
 
-        if (!tokenData.payload.id || !tokenFromDb) {
+        if (!tokenData.payload.id || !user) {
             throw HttpError.UnauthorizedError();
         }
 
-
-        const user = await this.userService.findOne(tokenData.payload.id);
-        if (user === null) {
+        if (!user === null) {
             throw HttpError.BadRequest("User does not exist!");
         }
 
         return await this.saveTokens(user);
     }
 
-    validate(token: string, type: Token): TokenPayload {
-        return this.tokenService.validateToken(token, type);
+
+    validateToken(token: string): TokenPayload {
+        try {
+            const { jwtSecret } = this.configService;
+            return verify(token, jwtSecret) as TokenPayload;
+        }
+        catch (error) {
+            throw HttpError.UnauthorizedError(error);
+        }
     }
 
     private hashPassword(password: string) {
@@ -97,9 +104,17 @@ export class AuthService {
     }
 
     private async saveTokens(user: UserDto): Promise<AuthResponse> {
-        let tokens = this.tokenService.generateTokens(user);
-        await this.tokenService.saveRefreshToken(tokens.refreshToken, user.id);
+        const {jwtSecret} = this.configService;
+        const accessToken = sign({payload: user}, jwtSecret, AccessTokenConfig);
+        const refreshToken = sign({payload: user}, jwtSecret, RefreshTokenConfig);
+        const authResponse = plainToInstance(AuthResponse, {
+            accessToken,
+            refreshToken,
+            user
+        }, { excludeExtraneousValues: true });
 
-        return tokens;
+        await this.userService.updateToken(user.id, authResponse.refreshToken);
+
+        return authResponse;
     }
 }
